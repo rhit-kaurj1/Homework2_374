@@ -65,11 +65,18 @@ public class Game {
     public void buyCard(String cardId) {
         if (turnState.hasTakenAny()) throw new RuleViolation("Cannot buy a card after taking chips this turn.");
         Card c = board.getCardById(cardId);
+        System.out.println("DEBUG: Attempting buyCard with cardId=" + cardId);
         if (c == null) throw new RuleViolation("Card not found: " + cardId);
+        System.out.println("DEBUG: Found card id=" + c.getId() + " vp=" + c.getVP() + " cost=" + c.costString());
         Player p = players[currentPlayerIndex];
-        if (!p.canAfford(c.getCost())) throw new RuleViolation("Cannot afford this card.");
+        System.out.println("DEBUG: Current player index=" + currentPlayerIndex + " chips=" + p.getChipsSnapshot());
+        if (!p.canAfford(c.getCost())) {
+            System.out.println("DEBUG: cannot afford: player chips=" + p.getChipsSnapshot() + " cost=" + c.getCost());
+            throw new RuleViolation("Cannot afford this card.");
+        }
         p.pay(c.getCost());
         p.addVP(c.getVP());
+        System.out.println("DEBUG: Purchase succeeded. New player chips=" + p.getChipsSnapshot() + " vp=" + p.getVP());
         board.removeCard(cardId);
         endTurnAndSave();
     }
