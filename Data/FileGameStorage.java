@@ -96,7 +96,16 @@ public class FileGameStorage implements GameStorage {
             while (i < s.length() && Character.isDigit(s.charAt(i))) i++;
             if (start == i) continue;
             int val = Integer.parseInt(s.substring(start, i));
-            m.put(Character.toString(ch), val);
+            String key;
+            switch (ch) {
+                case 'R': key = "RED"; break;
+                case 'B': key = "BLUE"; break;
+                case 'G': key = "GREEN"; break;
+                case 'K': key = "BLACK"; break;
+                case 'W': key = "WHITE"; break;
+                default: continue;
+            }
+            m.put(key, val);
         }
         return m;
     }
