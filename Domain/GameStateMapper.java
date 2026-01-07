@@ -20,6 +20,7 @@ public class GameStateMapper {
         d.p2chips = mapFromEnumMap(p2.getChipsSnapshot());
         d.cards = new ArrayList<>();
         for (Card c : game.board.getCards()) {
+            if (c == null) continue;
             SavedCardData sc = new SavedCardData();
             sc.id = c.getId();
             sc.vp = c.getVP();

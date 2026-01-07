@@ -15,6 +15,7 @@ public class Game {
     final CardRepository repo;
     final GameStorage storage;
     final GameStateMapper mapper;
+    final List<String> moveHistory = new ArrayList<>();
 
     public Game(CardRepository repo, GameStorage storage, GameStateMapper mapper) {
         this.repo = repo;
@@ -33,7 +34,12 @@ public class Game {
 
     public GameView getView() {
         List<CardView> cvs = new ArrayList<>();
-        for (Card c : board.getCards()) cvs.add(new CardView(c.getId(), c.getVP(), c.costString()));
+        for (Card c : board.getCards()) {
+            if (c == null)
+                cvs.add(null);
+            else
+                cvs.add(new CardView(c.getId(), c.getVP(), c.costString()));
+        }
         PlayerView p1v = new PlayerView(players[0].getVP(), players[0].getChipsSnapshot());
         PlayerView p2v = new PlayerView(players[1].getVP(), players[1].getChipsSnapshot());
         return new GameView(currentPlayerIndex, p1v, p2v, cvs);
@@ -42,6 +48,7 @@ public class Game {
     public void newGame() {
         players[0].reset();
         players[1].reset();
+        moveHistory.clear();
         List<Card> cards = new ArrayList<>();
         for (CardData cd : repo.getStartingCards()) {
             cards.add(new Card(cd.getId(), cd.getVP(), Card.parseCost(cd.getCostString())));
@@ -57,6 +64,7 @@ public class Game {
         // record and give to player
         turnState.record(chip);
         players[currentPlayerIndex].addChip(chip, 1);
+        moveHistory.add("TAKE:" + chip.name());
         if (turnState.endsTurnNow()) {
             endTurnAndSave();
         }
@@ -77,6 +85,7 @@ public class Game {
         p.pay(c.getCost());
         p.addVP(c.getVP());
         System.out.println("DEBUG: Purchase succeeded. New player chips=" + p.getChipsSnapshot() + " vp=" + p.getVP());
+        moveHistory.add("BUY:" + cardId);
         board.removeCard(cardId);
         endTurnAndSave();
     }
@@ -93,5 +102,9 @@ public class Game {
 
     void applySaved(SavedGameData data) {
         mapper.applySaved(this, data);
+    }
+
+    public List<String> getMoveHistory() {
+        return new ArrayList<>(moveHistory);
     }
 }

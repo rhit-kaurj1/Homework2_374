@@ -15,15 +15,14 @@ public class Board {
     public List<Card> getCards() { return Collections.unmodifiableList(cards); }
 
     public Card getCardById(String id) {
-        for (Card c : cards) if (c.getId().equals(id)) return c;
+        for (Card c : cards) if (c != null && c.getId().equals(id)) return c;
         return null;
     }
 
     public void removeCard(String id) {
-        Iterator<Card> it = cards.iterator();
-        while (it.hasNext()) {
-            if (it.next().getId().equals(id)) {
-                it.remove();
+        for (int i = 0; i < cards.size(); i++) {
+            if (cards.get(i) != null && cards.get(i).getId().equals(id)) {
+                cards.set(i, null);
                 return;
             }
         }
