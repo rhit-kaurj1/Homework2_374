@@ -31,6 +31,12 @@ public class GameController {
     }
 
     public void onChipClicked(Chip chip) {
+        if (game.isGameOver()) {
+            if (ui.promptForBoolean("This game is over. Do you want to start a new game?")) {
+                onNewGame();
+            }
+            return;
+        }
         try {
             int prevIndex = game.getView().currentPlayerIndex;
             int player = prevIndex + 1;
@@ -47,16 +53,34 @@ public class GameController {
     }
 
     public void onCardClicked(String cardId) {
+        if (game.isGameOver()) {
+            if (ui.promptForBoolean("The game is over. Do you want to start a new game?")) {
+                onNewGame();
+            }
+            return;
+        }
         try {
             int prevIndex = game.getView().currentPlayerIndex;
             int player = prevIndex + 1;
             game.buyCard(cardId);
             refresh();
-            String msg = "Player " + player + " bought " + cardId;
-            if (game.getView().currentPlayerIndex != prevIndex) {
-                msg += ". Turn changed.";
+            
+            if (game.isGameOver()) {
+                String winner = game.getWinnerDescription();
+                ui.showMessage("Game Over! " + winner);
+                if (ui.promptForBoolean("Game Over! " + winner + "\nDo you want to save the replay?")) {
+                    onSaveReplay();
+                }
+                if (ui.promptForBoolean("Do you want to start a new game?")) {
+                    onNewGame();
+                }
+            } else {
+                String msg = "Player " + player + " bought " + cardId;
+                if (game.getView().currentPlayerIndex != prevIndex) {
+                    msg += ". Turn changed.";
+                }
+                ui.showMessage(msg);
             }
-            ui.showMessage(msg);
         } catch (RuleViolation rv) {
             ui.showError(rv.getMessage());
         }

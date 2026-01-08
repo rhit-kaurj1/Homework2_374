@@ -28,5 +28,10 @@ public class Board {
         }
     }
 
-    public boolean isEmpty() { return cards.isEmpty(); }
+    public boolean isEmpty() {
+        for (Card c : cards) {
+            if (c != null) return false;
+        }
+        return true;
+    }
 }

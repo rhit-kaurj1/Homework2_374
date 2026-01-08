@@ -167,6 +167,11 @@ public class GameUI extends JFrame {
             possibilities, possibilities[0]);
     }
 
+    public boolean promptForBoolean(String message) {
+        int response = JOptionPane.showConfirmDialog(this, message, "Game Over", JOptionPane.YES_NO_OPTION);
+        return response == JOptionPane.YES_OPTION;
+    }
+
     public void showError(String msg) {
         errorLabel.setText("Error: " + msg);
     }

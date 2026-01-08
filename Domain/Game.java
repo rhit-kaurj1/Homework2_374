@@ -73,18 +73,13 @@ public class Game {
     public void buyCard(String cardId) {
         if (turnState.hasTakenAny()) throw new RuleViolation("Cannot buy a card after taking chips this turn.");
         Card c = board.getCardById(cardId);
-        System.out.println("DEBUG: Attempting buyCard with cardId=" + cardId);
         if (c == null) throw new RuleViolation("Card not found: " + cardId);
-        System.out.println("DEBUG: Found card id=" + c.getId() + " vp=" + c.getVP() + " cost=" + c.costString());
         Player p = players[currentPlayerIndex];
-        System.out.println("DEBUG: Current player index=" + currentPlayerIndex + " chips=" + p.getChipsSnapshot());
         if (!p.canAfford(c.getCost())) {
-            System.out.println("DEBUG: cannot afford: player chips=" + p.getChipsSnapshot() + " cost=" + c.getCost());
             throw new RuleViolation("Cannot afford this card.");
         }
         p.pay(c.getCost());
         p.addVP(c.getVP());
-        System.out.println("DEBUG: Purchase succeeded. New player chips=" + p.getChipsSnapshot() + " vp=" + p.getVP());
         moveHistory.add("BUY:" + cardId);
         board.removeCard(cardId);
         endTurnAndSave();
@@ -106,5 +101,17 @@ public class Game {
 
     public List<String> getMoveHistory() {
         return new ArrayList<>(moveHistory);
+    }
+
+    public boolean isGameOver() {
+        return board.isEmpty();
+    }
+
+    public String getWinnerDescription() {
+        int p1 = players[0].getVP();
+        int p2 = players[1].getVP();
+        if (p1 > p2) return "Player 1 wins with " + p1 + " points!";
+        if (p2 > p1) return "Player 2 wins with " + p2 + " points!";
+        return "It's a draw! Both have " + p1 + " points.";
     }
 }
