@@ -1,3 +1,4 @@
+// Seokhyun
 package Data;
 
 public class NullGameStorage implements GameStorage {
